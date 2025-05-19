@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -5,6 +6,9 @@ import { verify } from "./middleware/jwt.js";
 import {
   handleUserSignup,
   handleUserLogin,
+  handleGetUserProfile,
+  handleUpdateUserProfile,
+  handleDeleteUser
 } from "./controllers/user.controller.js";
 
 dotenv.config();
@@ -45,6 +49,14 @@ app.get("/", (req, res) => {
 app.post("/api/v1/auth/signup", handleUserSignup);
 // 로그인
 app.post("/api/v1/auth/login", handleUserLogin);
+
+// 사용자 프로필 관련 라우트 추가
+// 내 정보 조회
+app.get("/api/v1/users/me", handleGetUserProfile);
+// 내 정보 수정
+app.put("/api/v1/users/me", handleUpdateUserProfile);
+// 회원 탈퇴
+app.delete("/api/v1/users/me", handleDeleteUser);
 
 app.use((err, req, res, next) => {
   if (res.headersSent) {
