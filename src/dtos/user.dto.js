@@ -25,3 +25,27 @@ export const userResponseDTO = (user) => {
     email: user.email,
   };
 };
+
+// 사용자 프로필 수정 DTO
+export const updateUserRequestDTO = (body) => {
+  return {
+    name: body.name,
+    email: body.email,
+    password: body.password,
+    currentPassword: body.currentPassword,
+    // 추가 필드가 있다면 여기에 넣으세요
+  };
+};
+
+// 사용자 프로필 응답 DTO (민감한 정보 제외)
+export const userProfileResponseDTO = (user) => {
+  return {
+    id: user.id,
+    serviceId: user.serviceId,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    // 추가 필드가 있다면 여기에 넣으세요 (비밀번호는 제외)
+  };
+};

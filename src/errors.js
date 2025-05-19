@@ -67,3 +67,22 @@ export class MissRequiredFieldError extends Error {
     this.data = data;
   }
 }
+export class UnauthorizedError extends Error {
+  constructor(message, data = null) {
+    super(message);
+    this.name = 'UnauthorizedError';
+    this.errorCode = 'unauthorized';
+    this.statusCode = 401;
+    this.data = data;
+  }
+}
+export class NotFoundError extends Error {
+  constructor(message, data = null) {
+    super(message);
+    this.name = 'NotFoundError';
+    this.statusCode = 404;
+    this.errorCode = 'not_found';
+    this.reason = message;
+    this.data = data;
+  }
+}
