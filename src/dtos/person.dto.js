@@ -8,8 +8,7 @@ export const createPersonRequestDTO = (req) => {
         introduction: req.introduction || null,
         note: req.note || null,
         isFavorite: req.is_favorite || false,
-        likeability: req.likeability || 0,
-        tags: req.tags || []
+        likeability: req.likeability || 0
     };
 };
 
@@ -27,7 +26,6 @@ export const personDetailResponseDTO = (person) => {
         likeability: person.likeability || 0,
         createdAt: person.created_at,
         updatedAt: person.updated_at,
-        tags: person.tags ? person.tags.split(',') : [],
         extraInfo: person.extra_info || {}
     };
 };
@@ -43,8 +41,7 @@ export const personListResponseDTO = (personList) => {
         nationality: person.nationality || null,
         introduction: person.introduction || null,
         isFavorite: person.is_favorite === 1,
-        likeability: person.likeability || 0,
-        tags: person.tags ? person.tags.split(',') : []
+        likeability: person.likeability || 0
     }));
 };
 
