@@ -5,13 +5,10 @@ export const findAllPersons = async (filter = {}) => {
     try {
         let query = `
             SELECT p.*, c.title as category_name,
-                   CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite,
-                   GROUP_CONCAT(DISTINCT t.tag_name) as tags
+                   CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
             FROM person p
                      LEFT JOIN category c ON p.category_id = c.id
                      LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = ?
-                     LEFT JOIN person_tag pt ON p.id = pt.person_id
-                     LEFT JOIN tag t ON pt.tag_id = t.id
             WHERE 1=1
         `;
 
@@ -46,7 +43,7 @@ export const findAllPersons = async (filter = {}) => {
         }
 
         // 그룹화 및 정렬
-        query += ` GROUP BY p.id ORDER BY p.name ASC`;
+        query += ` ORDER BY p.name ASC`;
 
         const [rows] = await pool.query(query, params);
         return rows;
@@ -75,17 +72,6 @@ export const findPersonById = async (personId) => {
         }
 
         const person = personRows[0];
-
-        // 태그 정보 조회
-        const [tagRows] = await pool.query(
-            `SELECT t.tag_name
-             FROM person_tag pt
-                      JOIN tag t ON pt.tag_id = t.id
-             WHERE pt.person_id = ?`,
-            [personId]
-        );
-
-        person.tags = tagRows.map(row => row.tag_name).join(',');
 
         // 추가 정보 조회
         const [extraInfoRows] = await pool.query(
@@ -141,35 +127,6 @@ export const createPerson = async (personData) => {
                     await connection.query(
                         `INSERT INTO extra_info (person_id, info_key, info_value) VALUES (?, ?, ?)`,
                         [personId, key, value]
-                    );
-                }
-            }
-
-            // 태그 정보 저장
-            if (personData.tags && personData.tags.length > 0) {
-                for (const tagName of personData.tags) {
-                    // 태그가 존재하는지 확인, 없으면 생성
-                    let tagId;
-                    const [existingTags] = await connection.query(
-                        `SELECT id FROM tag WHERE tag_name = ?`,
-                        [tagName]
-                    );
-
-                    if (existingTags.length > 0) {
-                        tagId = existingTags[0].id;
-                    } else {
-                        // 새 태그 생성
-                        const [newTag] = await connection.query(
-                            `INSERT INTO tag (tag_name) VALUES (?)`,
-                            [tagName]
-                        );
-                        tagId = newTag.insertId;
-                    }
-
-                    // 인물-태그 연결
-                    await connection.query(
-                        `INSERT INTO person_tag (person_id, tag_id) VALUES (?, ?)`,
-                        [personId, tagId]
                     );
                 }
             }
@@ -256,44 +213,6 @@ export const updatePerson = async (personId, personData) => {
                     `UPDATE person SET ${fields.join(", ")} WHERE id = ?`,
                     values
                 );
-            }
-
-            // 태그 정보 업데이트
-            if (personData.tags !== undefined) {
-                // 기존 태그 연결 삭제
-                await connection.query(
-                    "DELETE FROM person_tag WHERE person_id = ?",
-                    [personId]
-                );
-
-                // 새 태그 추가
-                if (personData.tags && personData.tags.length > 0) {
-                    for (const tagName of personData.tags) {
-                        // 태그가 존재하는지 확인, 없으면 생성
-                        let tagId;
-                        const [existingTags] = await connection.query(
-                            "SELECT id FROM tag WHERE tag_name = ?",
-                            [tagName]
-                        );
-
-                        if (existingTags.length > 0) {
-                            tagId = existingTags[0].id;
-                        } else {
-                            // 새 태그 생성
-                            const [newTag] = await connection.query(
-                                "INSERT INTO tag (tag_name) VALUES (?)",
-                                [tagName]
-                            );
-                            tagId = newTag.insertId;
-                        }
-
-                        // 인물-태그 연결
-                        await connection.query(
-                            "INSERT INTO person_tag (person_id, tag_id) VALUES (?, ?)",
-                            [personId, tagId]
-                        );
-                    }
-                }
             }
 
             // 추가 정보 업데이트
