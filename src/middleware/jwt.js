@@ -48,7 +48,6 @@ export const verify = (req, res, next) => {
   }
 };
 
-
 // 토큰 형식 확인
 export const checkFormat = (req) => {
   if (req && req.startsWith("Bearer ")) {

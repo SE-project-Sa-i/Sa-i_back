@@ -20,11 +20,11 @@ export const handleGetPersons = async (req, res) => {
     // 쿼리 파라미터에서 필터 조건 가져오기
     const filter = {
       categoryId: req.query.category_id,
-      nationality: req.query.nationality,
-      search: req.query.search,
     };
 
-    const result = await getPersonsService(filter);
+    const user_id = req.userId;
+
+    const result = await getPersonsService(filter, user_id);
     res.status(StatusCodes.OK).success(result);
   } catch (error) {
     console.error("인물 노드 목록 조회 오류:", error);

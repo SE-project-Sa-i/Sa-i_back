@@ -1,49 +1,26 @@
 import { pool } from "../db.config.js";
 
 // 모든 인물 노드 조회
-export const findAllPersons = async (filter = {}) => {
+export const findAllPersons = async (filter = {}, user_id) => {
   try {
     let query = `
-            SELECT p.*, c.title as category_name,
-                   CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
-            FROM person p
-                     LEFT JOIN category c ON p.category_id = c.id
-                     LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = ?
-            WHERE 1=1
+           SELECT p.*, c.title as category_name,
+              CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
+              FROM person p
+          INNER JOIN category c ON p.category_id = c.id AND c.user_id = ?
+          LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = ?
         `;
 
-    // 사용자 ID (로그인 상태에 따라 달라질 수 있음)
-    const userId = filter.userId || 1; // 기본값 1 (필요에 따라 변경)
-    const params = [userId];
+    const params = [user_id, user_id];
 
-    // 필터 적용
+    // 카테고리 필터 적용
     if (filter.categoryId) {
-      query += ` AND p.category_id = ?`;
+      query += ` WHERE p.category_id = ?`;
       params.push(filter.categoryId);
     }
 
-    if (filter.nationality) {
-      query += ` AND p.nationality = ?`;
-      params.push(filter.nationality);
-    }
-
-    if (filter.search) {
-      query += ` AND (p.name LIKE ? OR p.introduction LIKE ? OR p.note LIKE ?)`;
-      const searchParam = `%${filter.search}%`;
-      params.push(searchParam, searchParam, searchParam);
-    }
-
-    if (filter.favorite) {
-      query += ` AND f.person_id IS NOT NULL`;
-    }
-
-    if (filter.likeability) {
-      query += ` AND p.likeability >= ?`;
-      params.push(filter.likeability);
-    }
-
-    // 그룹화 및 정렬
-    query += ` ORDER BY p.name ASC`;
+    // 즐겨찾기 우선 정렬 후 이름순 정렬
+    query += ` ORDER BY is_favorite DESC, p.name ASC`;
 
     const [rows] = await pool.query(query, params);
     return rows;
