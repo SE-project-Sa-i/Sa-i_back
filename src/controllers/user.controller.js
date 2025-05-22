@@ -3,12 +3,12 @@ import {
   userLoginService,
   getUserProfileService,
   updateUserProfileService,
-  deleteUserService
+  deleteUserService,
 } from "../services/user.service.js";
 import {
   signupRequestDTO,
   loginRequestDTO,
-  updateUserRequestDTO
+  updateUserRequestDTO,
 } from "../dtos/user.dto.js";
 import { StatusCodes } from "http-status-codes";
 import { MissRequiredFieldError, UnauthorizedError } from "../errors.js";
@@ -20,10 +20,10 @@ export const handleUserSignup = async (req, res) => {
 
     // 필수 필드 확인
     if (
-        !userData.name ||
-        !userData.serviceId ||
-        !userData.email ||
-        !userData.password
+      !userData.name ||
+      !userData.serviceId ||
+      !userData.email ||
+      !userData.password
     ) {
       throw new MissRequiredFieldError("모든 필드를 입력해주세요.", null);
     }
@@ -59,7 +59,7 @@ export const handleGetUserProfile = async (req, res) => {
   try {
     // userId 사용하여 사용자 정보 확인 (JWT 미들웨어와 호환)
     if (!req.userId) {
-      throw new UnauthorizedError("인증이 필요합니다.");
+      throw new UnauthorizedError("인증이 필요합니다.", null);
     }
 
     const userId = req.userId;
@@ -114,7 +114,9 @@ export const handleDeleteUser = async (req, res) => {
 
     await deleteUserService(userId, req.body.password);
 
-    res.status(StatusCodes.OK).success({ message: "회원 탈퇴가 완료되었습니다." });
+    res
+      .status(StatusCodes.OK)
+      .success({ message: "회원 탈퇴가 완료되었습니다." });
   } catch (error) {
     console.error("회원 탈퇴 오류:", error);
     throw error;
