@@ -4,6 +4,7 @@ import {
   createPerson,
   updatePerson,
   deletePerson,
+  updatePersonField
 } from "../repositories/person.repository.js";
 import {
   personDetailResponseDTO,
@@ -54,14 +55,12 @@ export const createPersonService = async (personData) => {
 // 인물 노드 수정 서비스
 export const updatePersonService = async (personId, personData) => {
   try {
-    // 존재하는 인물인지 확인
     const existingPerson = await findPersonById(personId);
 
     if (!existingPerson) {
       throw new NotFoundError("수정할 인물을 찾을 수 없습니다.");
     }
 
-    // 수정할 데이터에서 undefined 필드 제거
     Object.keys(personData).forEach((key) => {
       if (personData[key] === undefined) {
         delete personData[key];
@@ -78,7 +77,6 @@ export const updatePersonService = async (personId, personData) => {
 // 인물 노드 삭제 서비스
 export const deletePersonService = async (personId) => {
   try {
-    // 존재하는 인물인지 확인
     const existingPerson = await findPersonById(personId);
 
     if (!existingPerson) {
@@ -87,6 +85,22 @@ export const deletePersonService = async (personId) => {
 
     await deletePerson(personId);
     return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 단일 필드 수정 서비스 (한줄 소개, 노트, 호감도 등)
+export const updatePersonFieldService = async (personId, fields) => {
+  try {
+    const existingPerson = await findPersonById(personId);
+
+    if (!existingPerson) {
+      throw new NotFoundError("수정할 인물을 찾을 수 없습니다.");
+    }
+
+    const updatedPerson = await updatePersonField(personId, fields);
+    return personDetailResponseDTO(updatedPerson);
   } catch (error) {
     throw error;
   }

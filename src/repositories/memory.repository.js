@@ -4,13 +4,13 @@ import { pool } from "../db.config.js";
 export const findMemoriesByPersonId = async (personId) => {
     try {
         const [rows] = await pool.query(
-            `SELECT m.*, 
-            (SELECT GROUP_CONCAT(mi.image_url) 
-             FROM memory_image mi 
-             WHERE mi.memory_id = m.id) as images
-            FROM memory m
-            WHERE m.person_id = ? 
-            ORDER BY m.created_at DESC`
+            `SELECT m.*,
+                    (SELECT GROUP_CONCAT(mi.image_url)
+                     FROM memory_image mi
+                     WHERE mi.memory_id = m.id) as images
+             FROM memory m
+             WHERE m.person_id = ?
+             ORDER BY m.registered_at DESC`,
             [personId]
         );
 
@@ -34,12 +34,12 @@ export const findMemoriesByPersonId = async (personId) => {
 export const findMemoryById = async (memoryId) => {
     try {
         const [rows] = await pool.query(
-            `SELECT m.*, 
-            (SELECT GROUP_CONCAT(mi.image_url) 
-             FROM memory_image mi 
-             WHERE mi.memory_id = m.id) as images
-            FROM memory m
-            WHERE m.id = ?`,
+            `SELECT m.*,
+                    (SELECT GROUP_CONCAT(mi.image_url)
+                     FROM memory_image mi
+                     WHERE mi.memory_id = m.id) as images
+             FROM memory m
+             WHERE m.id = ?`,
             [memoryId]
         );
 
@@ -106,20 +106,6 @@ export const updateMemory = async (memoryId, memoryData) => {
             values.push(memoryData.content);
         }
 
-        if (memoryData.date !== undefined) {
-            fields.push("date = ?");
-            values.push(memoryData.date);
-        }
-
-        if (memoryData.location !== undefined) {
-            fields.push("location = ?");
-            values.push(memoryData.location);
-        }
-
-        if (memoryData.mood !== undefined) {
-            fields.push("mood = ?");
-            values.push(memoryData.mood);
-        }
 
         if (fields.length === 0 && (!memoryData.imageUrls || memoryData.imageUrls.length === 0)) {
             return await findMemoryById(memoryId);

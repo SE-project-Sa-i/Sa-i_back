@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { verify } from "./middleware/jwt.js";
+
 import {
   handleUserSignup,
   handleUserLogin,
@@ -10,25 +11,30 @@ import {
   handleDeleteUser
 } from "./controllers/user.controller.js";
 
-// 추가된 컨트롤러 import
 import {
   handleGetPersons,
   handleGetPersonById,
   handleCreatePerson,
   handleUpdatePerson,
-  handleDeletePerson
+  handleDeletePerson,
+  handleUpdateOneLineIntro,
+  handleUpdateNote,
+  handleUpdateLikeability
 } from "./controllers/person.controller.js";
+
 import {
   handleCreateCategory,
   handleGetCategories,
   handleGetCategoryById
 } from "./controllers/category.controller.js";
+
 import {
   handleGetMemoriesByPersonId,
   handleCreateMemory,
   handleUpdateMemory,
   handleDeleteMemory
 } from "./controllers/memory.controller.js";
+
 import {
   handleAddToFavorites,
   handleRemoveFromFavorites,
@@ -56,60 +62,53 @@ app.use((req, res, next) => {
   next();
 });
 
-// 미들웨어 설정
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// JWT 검증 미들웨어 적용
 app.use(verify);
 
-// 라우트 설정
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.get("/", (req, res) => res.send("Hello World!"));
 
-// 회원가입
+// 인증
 app.post("/api/v1/auth/signup", handleUserSignup);
-// 로그인
 app.post("/api/v1/auth/login", handleUserLogin);
 
-// 사용자 프로필 관련 라우트 추가
-// 내 정보 조회
+// 사용자
 app.get("/api/v1/users/me", handleGetUserProfile);
-// 내 정보 수정
 app.put("/api/v1/users/me", handleUpdateUserProfile);
-// 회원 탈퇴
 app.delete("/api/v1/users/me", handleDeleteUser);
 
-// 인물 노드 관련 라우트
+// 인물
 app.get("/api/v1/persons", handleGetPersons);
 app.get("/api/v1/persons/:personId", handleGetPersonById);
 app.post("/api/v1/persons", handleCreatePerson);
 app.put("/api/v1/persons/:personId", handleUpdatePerson);
 app.delete("/api/v1/persons/:personId", handleDeletePerson);
 
-// 카테고리 관련 라우트
+// 추가된 인물 정보 수정 엔드포인트
+app.put("/api/v1/persons/:personId/info/one-line", handleUpdateOneLineIntro);
+app.put("/api/v1/persons/:personId/info/note", handleUpdateNote);
+app.put("/api/v1/persons/:personId/info/likes", handleUpdateLikeability);
+
+// 카테고리
 app.post("/api/v1/categories", handleCreateCategory);
 app.get("/api/v1/categories", handleGetCategories);
 app.get("/api/v1/categories/:categoryId", handleGetCategoryById);
 
-// 메모리 관련 라우트
+// 메모리
 app.get("/api/v1/persons/:personId/memories", handleGetMemoriesByPersonId);
-app.post("/api/v1/persons/:personId/memories", handleCreateMemory);
-app.put("/api/v1/persons/:personId/memories/:memoryId", handleUpdateMemory);
-app.delete("/api/v1/persons/:personId/memories/:memoryId", handleDeleteMemory);
+app.post("/api/v1/persons/:personId/info/memory", handleCreateMemory);
+app.put("/api/v1/persons/:personId/info/memory", handleUpdateMemory);
+app.delete("/api/v1/persons/:personId/info/memory", handleDeleteMemory);
 
-// 즐겨찾기 관련 라우트
-app.post("/api/v1/persons/:personId/favorite", handleAddToFavorites);
-app.delete("/api/v1/persons/:personId/favorite", handleRemoveFromFavorites);
+// 즐겨찾기
+app.post("/api/v1/persons/:personId/favorites", handleAddToFavorites);
+app.delete("/api/v1/persons/:personId/favorites", handleRemoveFromFavorites);
 app.get("/api/v1/favorites", handleGetFavorites);
 
+// 에러 핸들링
 app.use((err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
-
+  if (res.headersSent) return next(err);
   res.status(err.statusCode || 500).error({
     errorCode: err.errorCode || "unknown",
     reason: err.reason || err.message || null,
@@ -117,7 +116,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 서버 시작
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

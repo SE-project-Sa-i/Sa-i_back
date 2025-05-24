@@ -4,7 +4,6 @@ export const createPersonRequestDTO = (req) => {
     name: req.name,
     categoryId: req.category_id,
     imageUrl: req.image_url || null,
-    nationality: req.nationality || null,
     introduction: req.introduction || null,
     note: req.note || null,
     isFavorite: req.is_favorite || false,
@@ -19,7 +18,6 @@ export const personDetailResponseDTO = (person) => {
     name: person.name,
     categoryId: person.category_id,
     imageUrl: person.image_url || null,
-    nationality: person.nationality || null,
     introduction: person.introduction || null,
     note: person.note || null,
     isFavorite: person.is_favorite === 1,
@@ -38,7 +36,6 @@ export const personListResponseDTO = (personList) => {
     categoryId: person.category_id,
     categoryName: person.category_name,
     imageUrl: person.image_url || null,
-    nationality: person.nationality || null,
     introduction: person.introduction || null,
     isFavorite: person.is_favorite === 1,
     likeability: person.likeability || 0,
@@ -49,13 +46,12 @@ export const personListResponseDTO = (personList) => {
 export const updatePersonRequestDTO = (req) => {
   return {
     name: req.name,
-    birthYear: req.birth_year,
-    deathYear: req.death_year,
-    nationality: req.nationality,
-    description: req.description,
-    occupation: req.occupation,
     categoryId: req.category_id,
     imageUrl: req.image_url,
+    introduction: req.introduction,
+    note: req.note,
+    isFavorite: req.is_favorite,
+    likeability: req.likeability,
   };
 };
 
@@ -74,7 +70,7 @@ export const createCategoryRequestDTO = (req) => {
 export const categoryResponseDTO = (category) => {
   const result = {
     id: category.id,
-    name: category.name || category.title, // title을 name으로 사용
+    name: category.name || category.title,
     description: category.description || null,
     parentId: category.parent_id || category.parent_category_id || null,
     isRoot: category.is_root === 1,
@@ -83,17 +79,16 @@ export const categoryResponseDTO = (category) => {
     updatedAt: category.updated_at,
   };
 
-  // 하위 카테고리가 있는 경우
   if (category.children && Array.isArray(category.children)) {
     result.children = category.children.map((child) =>
-      categoryResponseDTO(child)
+        categoryResponseDTO(child)
     );
   }
 
   return result;
 };
 
-// 인물 노드 메모리 DTO 확장
+// 인물 노드 메모리 DTO
 export const memoryResponseDTO = (memory) => {
   return {
     id: memory.id,
