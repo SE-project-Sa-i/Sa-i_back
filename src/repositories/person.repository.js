@@ -32,13 +32,13 @@ export const findAllPersons = async (filter = {}, user_id) => {
 export const findPersonById = async (personId) => {
   try {
     const [personRows] = await pool.query(
-        `SELECT p.*, c.title as category_name,
+      `SELECT p.*, c.title as category_name,
                 CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
          FROM person p
                 LEFT JOIN category c ON p.category_id = c.id
                 LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = 1
          WHERE p.id = ?`,
-        [personId]
+      [personId]
     );
 
     if (personRows.length === 0) return null;
@@ -46,8 +46,8 @@ export const findPersonById = async (personId) => {
     const person = personRows[0];
 
     const [extraInfoRows] = await pool.query(
-        `SELECT title, info FROM extra_info WHERE person_id = ?`,
-        [personId]
+      `SELECT title, info FROM extra_info WHERE person_id = ?`,
+      [personId]
     );
 
     person.extra_info = {};
@@ -63,39 +63,38 @@ export const findPersonById = async (personId) => {
 };
 
 // 인물 노드 생성
-export const createPerson = async (personData) => {
+export const createPerson = async (personData, userId) => {
   const connection = await pool.getConnection();
   await connection.beginTransaction();
 
   try {
+    // person 테이블에 인물 추가
     const [result] = await connection.query(
-        `INSERT INTO person (
-        name, category_id, image_url,
-        introduction, note, is_favorite, likeability
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          personData.name,
-          personData.categoryId,
-          personData.imageUrl,
-          personData.introduction,
-          personData.note,
-          personData.isFavorite ? 1 : 0,
-          personData.likeability,
-        ]
+      `INSERT INTO person (
+        name, category_id,
+        introduction, note
+      ) VALUES (?, ?, ?, ?)`,
+      [
+        personData.name,
+        personData.categoryId,
+        personData.introduction,
+        personData.note,
+      ]
     );
 
     const personId = result.insertId;
 
-    if (personData.extraInfo) {
-      for (const [key, value] of Object.entries(personData.extraInfo)) {
-        await connection.query(
-            `INSERT INTO extra_info (person_id, title, info) VALUES (?, ?, ?)`,
-            [personId, key, value]
-        );
-      }
+    // 2. 즐겨찾기가 체크되어 있다면 favorite_person 테이블에 추가
+    if (personData.isFavorite === true) {
+      await connection.query(
+        `INSERT INTO favorite_person (user_id, person_id) VALUES (?, ?)`,
+        [userId, personId]
+      );
     }
 
     await connection.commit();
+
+    // 3. 생성된 인물 정보를 다시 조회해서 반환
     return await findPersonById(personId);
   } catch (error) {
     await connection.rollback();
@@ -148,8 +147,8 @@ export const updatePerson = async (personId, personData) => {
       values.push(personId);
 
       await connection.query(
-          `UPDATE person SET ${fields.join(", ")} WHERE id = ?`,
-          values
+        `UPDATE person SET ${fields.join(", ")} WHERE id = ?`,
+        values
       );
     }
 
@@ -157,14 +156,14 @@ export const updatePerson = async (personId, personData) => {
       const keys = Object.keys(personData.extraInfo);
       if (keys.length > 0) {
         await connection.query(
-            "DELETE FROM extra_info WHERE person_id = ? AND title IN (?)",
-            [personId, keys]
+          "DELETE FROM extra_info WHERE person_id = ? AND title IN (?)",
+          [personId, keys]
         );
 
         for (const [key, value] of Object.entries(personData.extraInfo)) {
           await connection.query(
-              "INSERT INTO extra_info (person_id, title, info) VALUES (?, ?, ?)",
-              [personId, key, value]
+            "INSERT INTO extra_info (person_id, title, info) VALUES (?, ?, ?)",
+            [personId, key, value]
           );
         }
       }
@@ -184,10 +183,14 @@ export const updatePerson = async (personId, personData) => {
 export const deletePerson = async (personId) => {
   try {
     await pool.query("DELETE FROM memory WHERE person_id = ?", [personId]);
-    await pool.query("DELETE FROM memory_image WHERE person_id = ?", [personId]);
+    await pool.query("DELETE FROM memory_image WHERE person_id = ?", [
+      personId,
+    ]);
     await pool.query("DELETE FROM extra_info WHERE person_id = ?", [personId]);
 
-    const [result] = await pool.query("DELETE FROM person WHERE id = ?", [personId]);
+    const [result] = await pool.query("DELETE FROM person WHERE id = ?", [
+      personId,
+    ]);
     return result.affectedRows > 0;
   } catch (error) {
     console.error("인물 노드 삭제 오류:", error);
@@ -207,7 +210,9 @@ export const updatePersonField = async (personId, fields) => {
 
   try {
     await pool.query(sql, [...values, personId]);
-    const [rows] = await pool.query("SELECT * FROM person WHERE id = ?", [personId]);
+    const [rows] = await pool.query("SELECT * FROM person WHERE id = ?", [
+      personId,
+    ]);
     return rows[0];
   } catch (error) {
     console.error("사람 정보 업데이트 오류:", error);

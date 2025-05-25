@@ -12,7 +12,7 @@ import {
   createPersonService,
   updatePersonService,
   deletePersonService,
-  updatePersonFieldService
+  updatePersonFieldService,
 } from "../services/person.service.js";
 
 // 인물 노드 목록 조회 API
@@ -53,7 +53,9 @@ export const handleCreatePerson = async (req, res) => {
       throw new MissRequiredFieldError("이름과 카테고리는 필수입니다.");
     }
 
-    const result = await createPersonService(personData);
+    const userId = req.userId;
+
+    const result = await createPersonService(personData, userId);
     res.status(StatusCodes.CREATED).success(result);
   } catch (error) {
     console.error("인물 노드 생성 오류:", error);
@@ -86,7 +88,9 @@ export const handleDeletePerson = async (req, res) => {
     if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
 
     await deletePersonService(personId);
-    res.status(StatusCodes.OK).success({ message: "인물 노드가 삭제되었습니다." });
+    res
+      .status(StatusCodes.OK)
+      .success({ message: "인물 노드가 삭제되었습니다." });
   } catch (error) {
     console.error("인물 노드 삭제 오류:", error);
     throw error;
@@ -101,7 +105,9 @@ export const handleUpdateOneLineIntro = async (req, res) => {
 
     if (!one_line) throw new MissRequiredFieldError("한줄소개가 필요합니다.");
 
-    const result = await updatePersonFieldService(personId, { introduction: one_line });
+    const result = await updatePersonFieldService(personId, {
+      introduction: one_line,
+    });
     res.status(StatusCodes.OK).success(result);
   } catch (error) {
     console.error("한줄소개 수정 오류:", error);

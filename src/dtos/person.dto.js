@@ -3,11 +3,9 @@ export const createPersonRequestDTO = (req) => {
   return {
     name: req.name,
     categoryId: req.category_id,
-    imageUrl: req.image_url || null,
     introduction: req.introduction || null,
     note: req.note || null,
     isFavorite: req.is_favorite || false,
-    likeability: req.likeability || 0,
   };
 };
 
@@ -17,14 +15,9 @@ export const personDetailResponseDTO = (person) => {
     id: person.id,
     name: person.name,
     categoryId: person.category_id,
-    imageUrl: person.image_url || null,
     introduction: person.introduction || null,
     note: person.note || null,
-    isFavorite: person.is_favorite === 1,
-    likeability: person.likeability || 0,
-    createdAt: person.created_at,
-    updatedAt: person.updated_at,
-    extraInfo: person.extra_info || {},
+    isFavorite: person.is_favorite,
   };
 };
 
@@ -81,7 +74,7 @@ export const categoryResponseDTO = (category) => {
 
   if (category.children && Array.isArray(category.children)) {
     result.children = category.children.map((child) =>
-        categoryResponseDTO(child)
+      categoryResponseDTO(child)
     );
   }
 

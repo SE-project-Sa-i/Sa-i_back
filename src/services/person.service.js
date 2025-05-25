@@ -4,7 +4,7 @@ import {
   createPerson,
   updatePerson,
   deletePerson,
-  updatePersonField
+  updatePersonField,
 } from "../repositories/person.repository.js";
 import {
   personDetailResponseDTO,
@@ -38,9 +38,9 @@ export const getPersonByIdService = async (personId) => {
 };
 
 // 인물 노드 생성 서비스
-export const createPersonService = async (personData) => {
+export const createPersonService = async (personData, userId) => {
   try {
-    const newPerson = await createPerson(personData);
+    const newPerson = await createPerson(personData, userId);
 
     if (!newPerson) {
       throw new IntervalServerError("인물 노드 생성에 실패했습니다.");
