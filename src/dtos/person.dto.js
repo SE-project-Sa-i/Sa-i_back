@@ -43,7 +43,6 @@ export const updatePersonRequestDTO = (req) => {
     imageUrl: req.image_url,
     introduction: req.introduction,
     note: req.note,
-    isFavorite: req.is_favorite,
     likeability: req.likeability,
   };
 };

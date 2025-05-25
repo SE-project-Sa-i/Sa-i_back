@@ -129,10 +129,6 @@ export const updatePerson = async (personId, personData) => {
     fields.push("note = ?");
     values.push(personData.note);
   }
-  if (personData.isFavorite !== undefined) {
-    fields.push("is_favorite = ?");
-    values.push(personData.isFavorite ? 1 : 0);
-  }
   if (personData.likeability !== undefined) {
     fields.push("likeability = ?");
     values.push(personData.likeability);
@@ -182,9 +178,13 @@ export const updatePerson = async (personId, personData) => {
 // 인물 노드 삭제
 export const deletePerson = async (personId) => {
   try {
+    const memoryId = await pool.query(
+      "SELECT id FROM memory WHERE person_id = ?",
+      [personId]
+    );
     await pool.query("DELETE FROM memory WHERE person_id = ?", [personId]);
-    await pool.query("DELETE FROM memory_image WHERE person_id = ?", [
-      personId,
+    await pool.query("DELETE FROM memory_image WHERE memory_id = ?", [
+      memoryId[0].id,
     ]);
     await pool.query("DELETE FROM extra_info WHERE person_id = ?", [personId]);
 
