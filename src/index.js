@@ -8,7 +8,7 @@ import {
   handleUserLogin,
   handleGetUserProfile,
   handleUpdateUserProfile,
-  handleDeleteUser
+  handleDeleteUser,
 } from "./controllers/user.controller.js";
 
 import {
@@ -19,26 +19,26 @@ import {
   handleDeletePerson,
   handleUpdateOneLineIntro,
   handleUpdateNote,
-  handleUpdateLikeability
+  handleUpdateLikeability,
 } from "./controllers/person.controller.js";
 
 import {
   handleCreateCategory,
   handleGetCategories,
-  handleGetCategoryById
+  handleGetCategoryById,
 } from "./controllers/category.controller.js";
 
 import {
   handleGetMemoriesByPersonId,
   handleCreateMemory,
   handleUpdateMemory,
-  handleDeleteMemory
+  handleDeleteMemory,
 } from "./controllers/memory.controller.js";
 
 import {
   handleAddToFavorites,
   handleRemoveFromFavorites,
-  handleGetFavorites
+  handleGetFavorites,
 } from "./controllers/favorite.controller.js";
 
 dotenv.config();
@@ -82,13 +82,15 @@ app.delete("/api/v1/users/me", handleDeleteUser);
 app.get("/api/v1/persons", handleGetPersons);
 app.get("/api/v1/persons/:personId", handleGetPersonById);
 app.post("/api/v1/persons", handleCreatePerson);
+// 인물 정보 수정
 app.put("/api/v1/persons/:personId", handleUpdatePerson);
 app.delete("/api/v1/persons/:personId", handleDeletePerson);
 
 // 추가된 인물 정보 수정 엔드포인트
-app.put("/api/v1/persons/:personId/info/one-line", handleUpdateOneLineIntro);
-app.put("/api/v1/persons/:personId/info/note", handleUpdateNote);
-app.put("/api/v1/persons/:personId/info/likes", handleUpdateLikeability);
+// 위의 인물 정보 수정 엔드포인트로 대체
+// app.put("/api/v1/persons/:personId/info/one-line", handleUpdateOneLineIntro);
+// app.put("/api/v1/persons/:personId/info/note", handleUpdateNote);
+// app.put("/api/v1/persons/:personId/info/likes", handleUpdateLikeability);
 
 // 카테고리
 app.post("/api/v1/categories", handleCreateCategory);

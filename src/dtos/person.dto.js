@@ -63,12 +63,9 @@ export const categoryResponseDTO = (category) => {
   const result = {
     id: category.id,
     name: category.name || category.title,
-    description: category.description || null,
     parentId: category.parent_id || category.parent_category_id || null,
-    isRoot: category.is_root === 1,
+    isRoot: category.is_root,
     color: category.color || null,
-    createdAt: category.created_at,
-    updatedAt: category.updated_at,
   };
 
   if (category.children && Array.isArray(category.children)) {

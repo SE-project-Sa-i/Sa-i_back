@@ -29,15 +29,19 @@ export const createCategory = async (categoryData) => {
 };
 
 // 모든 카테고리 조회 (계층 구조 적용)
-export const findAllCategories = async () => {
+export const findAllCategories = async (userId) => {
   try {
     // 모든 카테고리 조회
-    const [allCategories] = await pool.query(`
+    const [allCategories] = await pool.query(
+      `
             SELECT c.*,
                    (SELECT COUNT(*) FROM person p WHERE p.category_id = c.id) as person_count
             FROM category c
+            WHERE c.user_id = ?
             ORDER BY c.title ASC
-        `);
+        `,
+      [userId]
+    );
 
     // 계층 구조로 변환
     const categoryMap = {};
