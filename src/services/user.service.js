@@ -3,10 +3,11 @@ import { createJwt } from "../middleware/jwt.js";
 import {
   addUser,
   findUserByUsername,
-  findUserById,           // 추가된 함수
-  updateUser,             // 추가된 함수
-  deleteUser,             // 추가된 함수
-  findUserWithPasswordById // 추가된 함수
+  findUserById, // 추가된 함수
+  updateUser, // 추가된 함수
+  deleteUser, // 추가된 함수
+  findUserWithPasswordById,
+  createMeNode, // 추가된 함수
 } from "../repositories/user.repository.js";
 import { userResponseDTO, userProfileResponseDTO } from "../dtos/user.dto.js";
 import {
@@ -14,7 +15,7 @@ import {
   MismatchedPasswordError,
   UserNotFoundError,
   NotFoundError,
-  UnauthorizedError
+  UnauthorizedError,
 } from "../errors.js";
 import bcrypt from "bcrypt";
 
@@ -34,6 +35,8 @@ export const userSignupService = async (userData) => {
   if (!result) {
     throw new IntervalServerError("회원가입에 실패했습니다.", null);
   }
+
+  await createMeNode(result.id);
 
   return result;
 };
@@ -87,8 +90,8 @@ export const updateUserProfileService = async (userId, updateData) => {
 
       // 현재 비밀번호 확인
       const isPasswordValid = await bcrypt.compare(
-          updateData.currentPassword,
-          user.password
+        updateData.currentPassword,
+        user.password
       );
 
       if (!isPasswordValid) {
