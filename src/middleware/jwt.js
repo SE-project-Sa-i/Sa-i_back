@@ -20,7 +20,12 @@ export const createJwt = (user) => {
 
 // JWT 토큰 검증 미들웨어
 export const verify = (req, res, next) => {
-  const excludedPaths = ["/api/v1/auth/signup", "/api/v1/auth/login"];
+  const excludedPaths = [
+    "/api/v1/auth/signup",
+    "/api/v1/auth/login",
+    "/docs",
+    "/openapi.json",
+  ];
 
   if (excludedPaths.some((path) => req.path.startsWith(path))) {
     return next();
