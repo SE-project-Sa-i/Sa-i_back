@@ -13,6 +13,7 @@ import {
   updatePersonService,
   deletePersonService,
   updatePersonFieldService,
+  getPersonAllInfoService,
 } from "../services/person.service.js";
 
 // 인물 노드 목록 조회 API
@@ -145,6 +146,24 @@ export const handleUpdateLikeability = async (req, res) => {
     res.status(StatusCodes.OK).success(result);
   } catch (error) {
     console.error("호감도 수정 오류:", error);
+    throw error;
+  }
+};
+
+export const handleGetAllPersonInfo = async (req, res) => {
+  try {
+    const personId = req.params.personId;
+    if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
+    const personIsExist = await getPersonByIdService(personId);
+
+    console.log("personIsExist:", personIsExist);
+
+    const result = await getPersonAllInfoService(personId);
+    if (!result) throw new NotFoundError("해당 인물을 찾을 수 없습니다.");
+
+    res.status(StatusCodes.OK).success(result);
+  } catch (error) {
+    console.error("인물 정보 전체 조회 오류:", error);
     throw error;
   }
 };
