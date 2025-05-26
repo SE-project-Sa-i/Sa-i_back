@@ -219,3 +219,98 @@ export const updatePersonField = async (personId, fields) => {
     throw error;
   }
 };
+
+export const findPersonAllInfoById = async (personId) => {
+  const conn = await pool.getConnection();
+  try {
+    const [info] = await conn.query(
+      `select p.id,
+       p.name,
+       p.image_url,
+       p.introduction,
+       p.note,
+       p.likeability,
+       p.created_at,
+       CASE WHEN fp.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
+       from person p
+join favorite_person fp on p.id = fp.person_id
+where p.id = ?;`,
+      [personId]
+    );
+
+    const [extraInfos] = await conn.query(
+      `select id, title, info from extra_info where person_id = ?;`,
+      [personId]
+    );
+
+    const [memories] = await conn.query(
+      `select id, content, registered_at from memory where person_id = ? order by registered_at;`,
+      [personId]
+    );
+
+    const [path] = await conn.query(
+      `WITH RECURSIVE category_path AS (
+    -- 기본 케이스: 특정 인물의 카테고리부터 시작
+    SELECT
+        c.id,
+        c.title,
+        c.parent_category_id,
+        c.title as path,
+        0 as level
+    FROM category c
+    JOIN person p ON p.category_id = c.id
+    WHERE p.id = ? -- 인물 ID를 여기에 입력
+
+    UNION ALL
+
+    -- 재귀 케이스: 부모 카테고리들을 계속 찾아감
+    SELECT
+        parent.id,
+        parent.title,
+        parent.parent_category_id,
+        CONCAT(parent.title, ' > ', cp.path) as path,
+        cp.level + 1
+    FROM category parent
+    JOIN category_path cp ON parent.id = cp.parent_category_id
+)
+SELECT
+    p.id as person_id,
+    p.name as person_name,
+    CONCAT(
+        COALESCE(
+            (SELECT path FROM category_path ORDER BY level DESC LIMIT 1),
+            (SELECT title FROM category WHERE id = p.category_id)
+        ),
+        ' > ',
+        p.name
+    ) as category_path
+FROM person p
+WHERE p.id = ?;`,
+      [personId, personId]
+    );
+
+    const allPath = path[0].category_path;
+
+    const data = {
+      ...info[0],
+      allPath,
+      extraInfos: extraInfos.map((ei) => ({
+        id: ei.id,
+        title: ei.title,
+        info: ei.info,
+      })),
+      memories: memories.map((m) => ({
+        id: m.id,
+        content: m.content,
+        registeredAt: m.registered_at,
+      })),
+    };
+
+    console.log("인물 전체 정보 조회 성공:", data);
+
+    return data;
+  } catch (error) {
+    console.error("인물 전체 정보 조회 오류:", error);
+    throw error;
+  }
+};
