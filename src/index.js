@@ -106,7 +106,7 @@ app.delete("/api/v1/persons/:personId/info/memory", handleDeleteMemory);
 // 즐겨찾기
 app.post("/api/v1/persons/:personId/favorites", handleAddToFavorites);
 app.delete("/api/v1/persons/:personId/favorites", handleRemoveFromFavorites);
-app.get("/api/v1/favorites", handleGetFavorites);
+// app.get("/api/v1/favorites", handleGetFavorites); 필요 X
 
 // 에러 핸들링
 app.use((err, req, res, next) => {

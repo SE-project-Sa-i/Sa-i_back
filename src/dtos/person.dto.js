@@ -83,11 +83,7 @@ export const memoryResponseDTO = (memory) => {
     id: memory.id,
     personId: memory.person_id,
     content: memory.content,
-    date: memory.date,
-    location: memory.location || null,
-    mood: memory.mood || null,
-    imageUrls: memory.imageUrls || [],
-    createdAt: memory.created_at,
+    registeredAt: memory.registered_at,
     updatedAt: memory.updated_at,
   };
 };
