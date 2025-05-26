@@ -15,6 +15,278 @@ import { MissRequiredFieldError, UnauthorizedError } from "../errors.js";
 
 // 회원가입 API
 export const handleUserSignup = async (req, res) => {
+  /*
+#swagger.summary = '회원 가입 API';
+#swagger.tags = ['User']
+#swagger.requestBody = {
+  required: true,
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          name: { 
+            type: "string", 
+            example: "홍길동",
+            description: "사용자 이름"
+          },
+          service_id: { 
+            type: "string", 
+            example: "hong12",
+            description: "서비스 ID"
+          },
+          email: { 
+            type: "string", 
+            example: "hong@example.com",
+            description: "이메일 주소"
+          },
+          password: { 
+            type: "string", 
+            example: "password123",
+            description: "비밀번호"
+          }
+        },
+        required: ["name", "service_id", "email", "password"]
+      }
+    }
+  }
+};
+
+#swagger.responses[200] = {
+  description: "회원 가입 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              id: { 
+                type: "number", 
+                example: 2 
+              },
+              name: { 
+                type: "string", 
+                example: "최지은" 
+              },
+              service_id: { 
+                type: "string", 
+                example: "ji4722" 
+              },
+              email: { 
+                type: "string", 
+                example: "ji4722@gachon.ac.kr" 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[400] = {
+  description: "필수 필드 누락 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "F001" 
+              },
+              reason: { 
+                type: "string", 
+                example: "모든 필드를 입력해주세요." 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[409] = {
+  description: "아이디 중복 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "U002" 
+              },
+              reason: { 
+                type: "string", 
+                example: "아이디가 이미 존재합니다." 
+              },
+              data: {
+                type: "object",
+                properties: {
+                  name: { 
+                    type: "string", 
+                    example: "최지은" 
+                  },
+                  serviceId: { 
+                    type: "string", 
+                    example: "ji4722" 
+                  },
+                  email: { 
+                    type: "string", 
+                    example: "ji4722@gachon.ac.kr" 
+                  },
+                  password: { 
+                    type: "string", 
+                    example: "$2b$10$lU4c5HcnxnBZs3TBJhXCGOfQznlWJ52Hc9jnJJ6SLKuY6h56Z5RyG" 
+                  }
+                }
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[409] = {
+  description: "이메일 중복 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "U001" 
+              },
+              reason: { 
+                type: "string", 
+                example: "이매일이 이미 존재합니다." 
+              },
+              data: {
+                type: "object",
+                properties: {
+                  name: { 
+                    type: "string", 
+                    example: "최지은" 
+                  },
+                  serviceId: { 
+                    type: "string", 
+                    example: "ji472" 
+                  },
+                  email: { 
+                    type: "string", 
+                    example: "ji4722@gachon.ac.kr" 
+                  },
+                  password: { 
+                    type: "string", 
+                    example: "$2b$10$i.3D2DWXnI.MqsWMR8RSQeOeerH4Ij4by7NdJo01nIIh4dgQ.pAZq" 
+                  }
+                }
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[500] = {
+  description: "서버 에러 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "5001" 
+              },
+              reason: { 
+                type: "string", 
+                example: "회원가입에 실패하였습니다" 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const userData = signupRequestDTO(req.body);
 
