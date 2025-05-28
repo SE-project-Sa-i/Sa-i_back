@@ -94,10 +94,27 @@ app.get("/openapi.json", async (req, res, next) => {
   const routes = ["./src/index.js"];
   const doc = {
     info: {
-      title: "UMC 7th",
-      description: "UMC 7th Node.js 테스트 프로젝트입니다.",
+      title: "Sa:i",
+      description: "SE project Sa:i.",
     },
-    host: "43.200.144.249:3000",
+    host: "127.0.0.1:3000",
+    // 보안 스키마 정의 추가
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "JWT 토큰을 입력하세요",
+        },
+      },
+    },
+    // 전역 보안 설정 (선택사항)
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   };
 
   const result = await swaggerAutogen(options)(outputFile, routes, doc);
@@ -136,10 +153,10 @@ app.get("/api/v1/categories", handleGetCategories);
 app.get("/api/v1/categories/:categoryId", handleGetCategoryById);
 
 // 메모리
-app.get("/api/v1/persons/:personId/memories", handleGetMemoriesByPersonId);
+// app.get("/api/v1/persons/:personId/memories", handleGetMemoriesByPersonId); 메모 목록 조회하는 화면 없음
 app.post("/api/v1/persons/:personId/info/memory", handleCreateMemory);
 app.put("/api/v1/persons/:personId/info/memory", handleUpdateMemory);
-app.delete("/api/v1/persons/:personId/info/memory", handleDeleteMemory);
+// app.delete("/api/v1/persons/:personId/info/memory", handleDeleteMemory); 인물 삭제 시 메모리도 삭제되므로 필요 없음
 
 // 즐겨찾기
 app.post("/api/v1/persons/:personId/favorites", handleAddToFavorites);

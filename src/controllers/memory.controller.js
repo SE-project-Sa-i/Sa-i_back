@@ -33,6 +33,129 @@ export const handleGetMemoriesByPersonId = async (req, res) => {
 // 노드 메모 생성 API
 // POST /api/v1/persons/:personId/info/memory
 export const handleCreateMemory = async (req, res) => {
+  /*
+#swagger.summary = '인물 노드 추억 추가 API';
+#swagger.tags = ['Memory']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+#swagger.parameters['personId'] = {
+  in: 'path',
+  description: '추억을 추가할 인물 ID',
+  required: true,
+  schema: {
+    type: 'integer',
+    example: 1
+  }
+}
+#swagger.requestBody = {
+  required: true,
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          content: { 
+            type: "string", 
+            example: "놀이공원 다녀왔는데 재밌었당",
+            description: "추억 내용"
+          }
+        },
+        required: ["content"]
+      }
+    }
+  }
+};
+
+#swagger.responses[200] = {
+  description: "추억 추가 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              id: { 
+                type: "number", 
+                example: 14 
+              },
+              personId: { 
+                type: "number", 
+                example: 1 
+              },
+              content: { 
+                type: "string", 
+                example: "놀이공원 다녀왔는데 재밌었당" 
+              },
+              registeredAt: { 
+                type: "string", 
+                format: "date-time",
+                example: "2025-05-28T16:49:42.000Z" 
+              },
+              updatedAt: { 
+                type: "string", 
+                nullable: true,
+                example: null 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[400] = {
+  description: "내용은 필수입니다 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "F001" 
+              },
+              reason: { 
+                type: "string", 
+                example: "내용은 필수입니다." 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const personId = req.params.personId;
     const { content } = req.body;
@@ -64,6 +187,94 @@ export const handleCreateMemory = async (req, res) => {
 // 노드 메모 수정 API
 // PUT /api/v1/persons/:personId/info/memory
 export const handleUpdateMemory = async (req, res) => {
+  /*
+#swagger.summary = '인물 노드 추억 수정 API';
+#swagger.tags = ['Memory']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+#swagger.parameters['personId'] = {
+  in: 'path',
+  description: '추억을 수정할 인물 ID',
+  required: true,
+  schema: {
+    type: 'integer',
+    example: 1
+  }
+}
+#swagger.requestBody = {
+  required: true,
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          memory_id: { 
+            type: "number", 
+            example: 13,
+            description: "수정할 추억 ID"
+          },
+          content: { 
+            type: "string", 
+            example: "놀이공원에서 맛있는 걸 먹었다",
+            description: "수정할 추억 내용"
+          }
+        },
+        required: ["memory_id", "content"]
+      }
+    }
+  }
+};
+
+#swagger.responses[200] = {
+  description: "추억 수정 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              id: { 
+                type: "number", 
+                example: 13 
+              },
+              personId: { 
+                type: "number", 
+                example: 1 
+              },
+              content: { 
+                type: "string", 
+                example: "놀이공원에서 맛있는 걸 먹었다" 
+              },
+              registeredAt: { 
+                type: "string", 
+                format: "date-time",
+                example: "2025-05-26T11:48:50.000Z" 
+              },
+              updatedAt: { 
+                type: "string", 
+                format: "date-time",
+                example: "2025-05-28T16:50:42.000Z" 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const personId = req.params.personId;
     const { memory_id, content } = req.body;

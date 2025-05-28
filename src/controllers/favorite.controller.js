@@ -13,6 +13,61 @@ import {
 
 // 즐겨찾기 추가 API
 export const handleAddToFavorites = async (req, res) => {
+  /*
+#swagger.summary = '인물 즐겨찾기 추가 API';
+#swagger.tags = ['Favorite']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+#swagger.parameters['personId'] = {
+  in: 'path',
+  description: '즐겨찾기에 추가할 인물 ID',
+  required: true,
+  schema: {
+    type: 'integer',
+    example: 1
+  }
+}
+
+#swagger.responses[200] = {
+  description: "즐겨찾기 추가 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              favorite_id: { 
+                type: "number", 
+                example: 13 
+              },
+              person_id: { 
+                type: "number", 
+                example: 1 
+              },
+              name: { 
+                type: "string", 
+                example: "아버지" 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const { personId } = req.params;
     const userId = req.userId; // JWT 미들웨어에서 설정된 사용자 ID
@@ -42,6 +97,53 @@ export const handleAddToFavorites = async (req, res) => {
 
 // 즐겨찾기 삭제 API
 export const handleRemoveFromFavorites = async (req, res) => {
+  /*
+#swagger.summary = '인물 즐겨찾기 해제 API';
+#swagger.tags = ['Favorite']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+#swagger.parameters['personId'] = {
+  in: 'path',
+  description: '즐겨찾기에서 해제할 인물 ID',
+  required: true,
+  schema: {
+    type: 'integer',
+    example: 1
+  }
+}
+
+#swagger.responses[200] = {
+  description: "즐겨찾기 해제 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string", 
+                example: "즐겨찾기에서 삭제되었습니다." 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const { personId } = req.params;
     const userId = req.userId; // JWT 미들웨어에서 설정된 사용자 ID
