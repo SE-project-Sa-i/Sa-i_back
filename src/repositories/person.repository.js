@@ -29,16 +29,16 @@ export const findAllPersons = async (filter = {}, user_id) => {
 };
 
 // ID로 인물 노드 조회
-export const findPersonById = async (personId) => {
+export const findPersonById = async (personId, userId) => {
   try {
     const [personRows] = await pool.query(
       `SELECT p.*, c.title as category_name,
                 CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
          FROM person p
                 LEFT JOIN category c ON p.category_id = c.id
-                LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = 1
+                LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = ?
          WHERE p.id = ?`,
-      [personId]
+      [userId, personId]
     );
 
     if (personRows.length === 0) return null;
@@ -95,7 +95,7 @@ export const createPerson = async (personData, userId) => {
     await connection.commit();
 
     // 3. 생성된 인물 정보를 다시 조회해서 반환
-    return await findPersonById(personId);
+    return await findPersonById(personId, userId);
   } catch (error) {
     await connection.rollback();
     throw error;
@@ -183,9 +183,6 @@ export const deletePerson = async (personId) => {
       [personId]
     );
     await pool.query("DELETE FROM memory WHERE person_id = ?", [personId]);
-    await pool.query("DELETE FROM memory_image WHERE memory_id = ?", [
-      memoryId[0].id,
-    ]);
     await pool.query("DELETE FROM extra_info WHERE person_id = ?", [personId]);
 
     const [result] = await pool.query("DELETE FROM person WHERE id = ?", [

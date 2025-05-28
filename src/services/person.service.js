@@ -24,9 +24,9 @@ export const getPersonsService = async (filter = {}, user_id) => {
 };
 
 // 인물 노드 상세 조회 서비스
-export const getPersonByIdService = async (personId) => {
+export const getPersonByIdService = async (personId, userId) => {
   try {
-    const person = await findPersonById(personId);
+    const person = await findPersonById(personId, userId);
 
     if (!person) {
       throw new NotFoundError("해당 인물을 찾을 수 없습니다.");
@@ -54,9 +54,9 @@ export const createPersonService = async (personData, userId) => {
 };
 
 // 인물 노드 수정 서비스
-export const updatePersonService = async (personId, personData) => {
+export const updatePersonService = async (personId, personData, userId) => {
   try {
-    const existingPerson = await findPersonById(personId);
+    const existingPerson = await findPersonById(personId, userId);
 
     if (!existingPerson) {
       throw new NotFoundError("수정할 인물을 찾을 수 없습니다.");
@@ -76,9 +76,9 @@ export const updatePersonService = async (personId, personData) => {
 };
 
 // 인물 노드 삭제 서비스
-export const deletePersonService = async (personId) => {
+export const deletePersonService = async (personId, userId) => {
   try {
-    const existingPerson = await findPersonById(personId);
+    const existingPerson = await findPersonById(personId, userId);
 
     if (!existingPerson) {
       throw new NotFoundError("삭제할 인물을 찾을 수 없습니다.");
@@ -92,9 +92,9 @@ export const deletePersonService = async (personId) => {
 };
 
 // 단일 필드 수정 서비스 (한줄 소개, 노트, 호감도 등)
-export const updatePersonFieldService = async (personId, fields) => {
+export const updatePersonFieldService = async (personId, fields, userId) => {
   try {
-    const existingPerson = await findPersonById(personId);
+    const existingPerson = await findPersonById(personId, userId);
 
     if (!existingPerson) {
       throw new NotFoundError("수정할 인물을 찾을 수 없습니다.");

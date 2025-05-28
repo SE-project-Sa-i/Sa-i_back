@@ -33,10 +33,12 @@ export const handleGetPersons = async (req, res) => {
 // 인물 노드 상세 조회 API
 export const handleGetPersonById = async (req, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
     const personId = req.params.personId;
     if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
 
-    const result = await getPersonByIdService(personId);
+    const result = await getPersonByIdService(personId, userId);
     if (!result) throw new NotFoundError("해당 인물을 찾을 수 없습니다.");
 
     res.status(StatusCodes.OK).success(result);
@@ -67,11 +69,13 @@ export const handleCreatePerson = async (req, res) => {
 // 인물 노드 수정 API
 export const handleUpdatePerson = async (req, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
     const personId = req.params.personId;
     if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
 
     const personData = updatePersonRequestDTO(req.body);
-    const result = await updatePersonService(personId, personData);
+    const result = await updatePersonService(personId, personData, userId);
 
     if (!result) throw new NotFoundError("해당 인물을 찾을 수 없습니다.");
 
@@ -85,10 +89,12 @@ export const handleUpdatePerson = async (req, res) => {
 // 인물 노드 삭제 API
 export const handleDeletePerson = async (req, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
     const personId = req.params.personId;
     if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
 
-    await deletePersonService(personId);
+    await deletePersonService(personId, userId);
     res
       .status(StatusCodes.OK)
       .success({ message: "인물 노드가 삭제되었습니다." });
@@ -101,14 +107,20 @@ export const handleDeletePerson = async (req, res) => {
 // 한줄소개 수정 API
 export const handleUpdateOneLineIntro = async (req, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
     const personId = req.params.personId;
     const { one_line } = req.body;
 
     if (!one_line) throw new MissRequiredFieldError("한줄소개가 필요합니다.");
 
-    const result = await updatePersonFieldService(personId, {
-      introduction: one_line,
-    });
+    const result = await updatePersonFieldService(
+      personId,
+      {
+        introduction: one_line,
+      },
+      userId
+    );
     res.status(StatusCodes.OK).success(result);
   } catch (error) {
     console.error("한줄소개 수정 오류:", error);
@@ -152,9 +164,11 @@ export const handleUpdateLikeability = async (req, res) => {
 
 export const handleGetAllPersonInfo = async (req, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
     const personId = req.params.personId;
     if (!personId) throw new MissRequiredFieldError("인물 ID가 필요합니다.");
-    const personIsExist = await getPersonByIdService(personId);
+    const personIsExist = await getPersonByIdService(personId, userId);
 
     const result = await getPersonAllInfoService(personId);
     if (!result) throw new NotFoundError("해당 인물을 찾을 수 없습니다.");

@@ -5,7 +5,7 @@ export const createPersonRequestDTO = (req) => {
     categoryId: req.category_id,
     introduction: req.introduction || null,
     note: req.note || null,
-    isFavorite: req.is_favorite || false,
+    isFavorite: req.is_favorite,
   };
 };
 
