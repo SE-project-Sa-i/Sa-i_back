@@ -1194,6 +1194,178 @@ export const handleDeleteUser = async (req, res) => {
 
 // 나의 전체 노드 조회
 export const handleGetMyAllNodes = async (req, res) => {
+  /*
+#swagger.summary = '카테고리 및 인물 노드 전체 조회 API';
+#swagger.tags = ['Home']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+
+#swagger.responses[200] = {
+  description: "성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: { 
+                  type: "number", 
+                  example: 17 
+                },
+                name: { 
+                  type: "string", 
+                  example: "나" 
+                },
+                parentId: { 
+                  type: "number", 
+                  nullable: true, 
+                  example: null 
+                },
+                isRoot: { 
+                  type: "number", 
+                  example: 1 
+                },
+                color: { 
+                  type: "string", 
+                  example: "#FFCC00" 
+                },
+                type: { 
+                  type: "string", 
+                  example: "CATEGORY" 
+                },
+                children: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      id: { 
+                        type: "number", 
+                        example: 18 
+                      },
+                      name: { 
+                        type: "string", 
+                        example: "초등학교" 
+                      },
+                      parentId: { 
+                        type: "number", 
+                        example: 17 
+                      },
+                      isRoot: { 
+                        type: "number", 
+                        example: 0 
+                      },
+                      color: { 
+                        type: "string", 
+                        example: "#343434" 
+                      },
+                      type: { 
+                        type: "string", 
+                        example: "CATEGORY" 
+                      },
+                      children: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { 
+                              type: "number", 
+                              example: 16 
+                            },
+                            name: { 
+                              type: "string", 
+                              example: "김맹맹" 
+                            },
+                            parentId: { 
+                              type: "number", 
+                              example: 18 
+                            },
+                            isRoot: { 
+                              type: "number", 
+                              example: 0 
+                            },
+                            color: { 
+                              type: "string", 
+                              nullable: true, 
+                              example: null 
+                            },
+                            type: { 
+                              type: "string", 
+                              example: "PERSON" 
+                            },
+                            children: {
+                              type: "array",
+                              items: {},
+                              example: []
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[400] = {
+  description: "실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "DB001" 
+              },
+              reason: { 
+                type: "string", 
+                example: "DB 접근 중에 문제가 발생하였습니다." 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     if (!req.userId) {
       throw new UnauthorizedError("인증이 필요합니다.");
