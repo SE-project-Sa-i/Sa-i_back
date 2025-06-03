@@ -49,3 +49,14 @@ export const userProfileResponseDTO = (user) => {
     // 추가 필드가 있다면 여기에 넣으세요 (비밀번호는 제외)
   };
 };
+
+// 사용자 노드 응답 DTO
+export const responseAllNodesDTO = (nodes) => {
+  return nodes.map((node) => ({
+    id: node.id,
+    name: node.name,
+    type: node.type,
+    createdAt: node.createdAt,
+    updatedAt: node.updatedAt,
+  }));
+};
