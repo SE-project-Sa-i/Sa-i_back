@@ -81,17 +81,15 @@ export class UnauthorizedError extends Error {
     this.name = "UnauthorizedError";
     this.errorCode = "unauthorized";
     this.statusCode = 401;
-    this.reason = message;
     this.data = data;
   }
 }
-
 export class NotFoundError extends Error {
   constructor(message, data = null) {
     super(message);
     this.name = "NotFoundError";
-    this.errorCode = "not_found";
     this.statusCode = 404;
+    this.errorCode = "not_found";
     this.reason = message;
     this.data = data;
   }
@@ -127,6 +125,15 @@ export class AlreadyExistError extends Error {
     this.errorCode = "already_exists";
     this.statusCode = 409;
     this.reason = message;
+  }
+}
+
+export class DBError extends Error {
+  errorCode = "DB001";
+
+  constructor(reason, data) {
+    super(reason);
+    this.reason = reason;
     this.data = data;
   }
 }

@@ -11,6 +11,7 @@ import {
   handleGetUserProfile,
   handleUpdateUserProfile,
   handleDeleteUser,
+  handleGetMyAllNodes,
 } from "./controllers/user.controller.js";
 
 import {
@@ -131,6 +132,8 @@ app.post("/api/v1/auth/login", handleUserLogin);
 app.get("/api/v1/users/me", handleGetUserProfile);
 app.put("/api/v1/users/me", handleUpdateUserProfile);
 app.delete("/api/v1/users/me", handleDeleteUser);
+// 나의 전체 노드 조회
+app.get("/api/v1/home", handleGetMyAllNodes);
 
 // 인물
 app.get("/api/v1/persons", handleGetPersons);

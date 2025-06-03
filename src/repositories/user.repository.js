@@ -1,5 +1,6 @@
 import { pool } from "../db.config.js";
 import {
+  DBError,
   DuplicateUserEmailError,
   DuplicateUserIDError,
   NotFoundError,
@@ -191,5 +192,77 @@ export const findUserWithPasswordById = async (userId) => {
     return rows[0];
   } finally {
     connection.release();
+  }
+};
+
+export const getAllNodesbyUserId = async (userId) => {
+  const conn = await pool.getConnection();
+
+  try {
+    // 모든 카테고리와 인물을 플랫하게 조회
+    const [allCategories] = await conn.query(
+      `SELECT 
+        id,
+        title as name,
+        parent_category_id as parentId,
+        is_root as isRoot,
+        color,
+        'CATEGORY' as type
+      FROM category 
+      WHERE user_id = ?
+      ORDER BY id ASC`,
+      [userId]
+    );
+
+    const [allPersons] = await conn.query(
+      `SELECT 
+        p.id,
+        p.name,
+        p.category_id as parentId,
+        0 as isRoot,
+        NULL as color,
+        'PERSON' as type
+      FROM person p
+      JOIN category c ON p.category_id = c.id
+      WHERE c.user_id = ?
+      ORDER BY p.id ASC`,
+      [userId]
+    );
+
+    // 카테고리와 인물을 합친 전체 노드 배열
+    const allNodes = [...allCategories, ...allPersons];
+
+    // 계층 구조로 변환
+    const nodeMap = {};
+    const rootNodes = [];
+
+    // 먼저 모든 노드를 Map에 추가
+    allNodes.forEach((node) => {
+      nodeMap[`${node.type}_${node.id}`] = { ...node, children: [] };
+    });
+
+    // 부모-자식 관계 설정
+    allNodes.forEach((node) => {
+      const nodeKey = `${node.type}_${node.id}`;
+
+      if (node.type === "CATEGORY" && node.parentId === null) {
+        // 루트 카테고리
+        rootNodes.push(nodeMap[nodeKey]);
+      } else if (node.parentId !== null) {
+        // 자식 노드 (카테고리의 자식 카테고리 또는 카테고리의 인물)
+        const parentKey = `CATEGORY_${node.parentId}`;
+        const parent = nodeMap[parentKey];
+        if (parent) {
+          parent.children.push(nodeMap[nodeKey]);
+        }
+      }
+    });
+
+    return rootNodes;
+  } catch (error) {
+    console.error("DB 접근 중에 문제가 발생하였습니다.", error);
+    throw new DBError("DB 접근 중에 문제가 발생하였습니다.", null);
+  } finally {
+    conn.release();
   }
 };

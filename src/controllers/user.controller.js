@@ -4,6 +4,7 @@ import {
   getUserProfileService,
   updateUserProfileService,
   deleteUserService,
+  userGetAllNodesService,
 } from "../services/user.service.js";
 import {
   signupRequestDTO,
@@ -1187,6 +1188,23 @@ export const handleDeleteUser = async (req, res) => {
       .success({ message: "회원 탈퇴가 완료되었습니다." });
   } catch (error) {
     console.error("회원 탈퇴 오류:", error);
+    throw error;
+  }
+};
+
+// 나의 전체 노드 조회
+export const handleGetMyAllNodes = async (req, res) => {
+  try {
+    if (!req.userId) {
+      throw new UnauthorizedError("인증이 필요합니다.");
+    }
+
+    const userId = req.userId;
+    const result = await userGetAllNodesService(userId);
+
+    res.status(StatusCodes.OK).success(result);
+  } catch (error) {
+    console.error("나의 전체 노드 조회 오류:", error);
     throw error;
   }
 };

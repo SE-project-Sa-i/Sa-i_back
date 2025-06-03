@@ -8,8 +8,13 @@ import {
   deleteUser, // 추가된 함수
   findUserWithPasswordById,
   createMeNode, // 추가된 함수
+  getAllNodesbyUserId, // 추가된 함수
 } from "../repositories/user.repository.js";
-import { userResponseDTO, userProfileResponseDTO } from "../dtos/user.dto.js";
+import {
+  userResponseDTO,
+  userProfileResponseDTO,
+  responseAllNodesDTO,
+} from "../dtos/user.dto.js";
 import {
   IntervalServerError,
   MismatchedPasswordError,
@@ -133,5 +138,20 @@ export const deleteUserService = async (userId, password) => {
     return true;
   } catch (error) {
     throw error;
+  }
+};
+
+export const userGetAllNodesService = async (userId) => {
+  try {
+    const nodes = await getAllNodesbyUserId(userId);
+
+    if (!nodes) {
+      throw new NotFoundError("사용자를 찾을 수 없습니다.", null);
+    }
+
+    // 노드 정보 반환
+    return nodes;
+  } catch (error) {
+    throw new IntervalServerError("노드 조회 중 오류가 발생했습니다.", error);
   }
 };
