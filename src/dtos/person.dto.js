@@ -18,6 +18,7 @@ export const personDetailResponseDTO = (person) => {
     introduction: person.introduction || null,
     note: person.note || null,
     isFavorite: person.is_favorite,
+    likeability: person.likeability || 0,
   };
 };
 

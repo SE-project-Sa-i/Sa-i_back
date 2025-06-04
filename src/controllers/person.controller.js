@@ -474,6 +474,149 @@ export const handleCreatePerson = async (req, res) => {
 
 // 인물 노드 수정 API
 export const handleUpdatePerson = async (req, res) => {
+  /*
+#swagger.summary = '노드 수정 API';
+#swagger.tags = ['Person']
+#swagger.description = '즐겨찾기, 호감도 다른 api 사용'
+#swagger.security = [{
+  "bearerAuth": []
+}]
+#swagger.parameters['personId'] = {
+  in: 'path',
+  description: '수정할 노드의 ID',
+  required: true,
+  type: 'integer',
+  example: 9
+}
+#swagger.requestBody = {
+  required: false,
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        description: "모든 요소 optional로 처리 가능",
+        properties: {
+          name: { 
+            type: "string", 
+            example: "김맹맹",
+            description: "인물 이름"
+          },
+          introduction: { 
+            type: "string", 
+            example: "내 친구",
+            description: "인물 소개"
+          },
+          note: { 
+            type: "string", 
+            example: "초등학교 때 만나서 지금까지 친하게 지내고 있음",
+            description: "인물에 대한 메모"
+          },
+          likeability: { 
+            type: "number", 
+            example: 100,
+            description: "호감도"
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[200] = {
+  description: "노드 수정 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              id: { 
+                type: "number", 
+                example: 9 
+              },
+              name: { 
+                type: "string", 
+                example: "강맹맹" 
+              },
+              categoryId: { 
+                type: "number", 
+                example: 12 
+              },
+              introduction: { 
+                type: "string", 
+                example: "팀장님" 
+              },
+              note: { 
+                type: "string", 
+                example: "좋아하는 음식: 삼겹살, 싫어하는 것: 늦는 것" 
+              },
+              isFavorite: { 
+                type: "number", 
+                example: 0 
+              },
+              likeability: { 
+                type: "number", 
+                example: 100 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[404] = {
+  description: "수정할 인물을 찾을 수 없음 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "not_found" 
+              },
+              reason: { 
+                type: "string", 
+                example: "수정할 인물을 찾을 수 없습니다." 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     const userId = req.userId;
     if (!userId) throw new MissRequiredFieldError("사용자 ID가 필요합니다.");
