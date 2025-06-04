@@ -1168,6 +1168,84 @@ export const handleUpdateUserProfile = async (req, res) => {
 
 // 회원 탈퇴 API
 export const handleDeleteUser = async (req, res) => {
+  /*
+#swagger.summary = '회원 탈퇴 API';
+#swagger.tags = ['User']
+#swagger.security = [{
+  "bearerAuth": []
+}]
+
+#swagger.responses[200] = {
+  description: "회원 탈퇴 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "SUCCESS" 
+          },
+          error: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          },
+          success: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string", 
+                example: "회원 탈퇴가 완료되었습니다." 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+#swagger.responses[404] = {
+  description: "사용자를 찾을 수 없음 실패 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          resultType: { 
+            type: "string", 
+            example: "FAIL" 
+          },
+          error: {
+            type: "object",
+            properties: {
+              errorCode: { 
+                type: "string", 
+                example: "not_found" 
+              },
+              reason: { 
+                type: "string", 
+                example: "사용자를 찾을 수 없습니다." 
+              },
+              data: { 
+                type: "object", 
+                nullable: true, 
+                example: null 
+              }
+            }
+          },
+          success: { 
+            type: "object", 
+            nullable: true, 
+            example: null 
+          }
+        }
+      }
+    }
+  }
+};
+*/
   try {
     // userId 사용하여 사용자 정보 확인 (JWT 미들웨어와 호환)
     if (!req.userId) {

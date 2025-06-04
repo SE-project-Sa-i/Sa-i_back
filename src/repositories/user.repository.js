@@ -161,19 +161,128 @@ export const deleteUser = async (userId) => {
   const connection = await pool.getConnection();
 
   try {
+    await connection.beginTransaction();
+
+    // 1. 해당 사용자의 모든 카테고리를 계층 순서대로 조회 (자식부터)
+    const [allCategories] = await connection.query(
+      `SELECT id, parent_category_id FROM category WHERE user_id = ? ORDER BY parent_category_id DESC`,
+      [userId]
+    );
+
+    if (allCategories.length > 0) {
+      // 2. 카테고리를 계층 순서로 정렬 (자식 → 부모 순)
+      const sortedCategories = sortCategoriesByHierarchy(allCategories);
+      const categoryIds = sortedCategories.map((cat) => cat.id);
+
+      // 3. 각 카테고리에 속한 인물들의 ID 조회
+      const [persons] = await connection.query(
+        `SELECT id FROM person WHERE category_id IN (${categoryIds
+          .map(() => "?")
+          .join(",")})`,
+        categoryIds
+      );
+
+      if (persons.length > 0) {
+        const personIds = persons.map((person) => person.id);
+
+        // 4. 추억(memory) 테이블에서 해당 인물들의 데이터 삭제
+        await connection.query(
+          `DELETE FROM memory WHERE person_id IN (${personIds
+            .map(() => "?")
+            .join(",")})`,
+          personIds
+        );
+
+        // 5. 추가정보(extra_info) 테이블에서 해당 인물들의 데이터 삭제
+        await connection.query(
+          `DELETE FROM extra_info WHERE person_id IN (${personIds
+            .map(() => "?")
+            .join(",")})`,
+          personIds
+        );
+      }
+
+      // 6. 인물(person) 테이블에서 해당 카테고리의 인물들 삭제
+      await connection.query(
+        `DELETE FROM person WHERE category_id IN (${categoryIds
+          .map(() => "?")
+          .join(",")})`,
+        categoryIds
+      );
+
+      // 7. 카테고리를 자식부터 역순으로 삭제
+      for (const category of sortedCategories) {
+        await connection.query(`DELETE FROM category WHERE id = ?`, [
+          category.id,
+        ]);
+      }
+    }
+
+    // 8. 즐겨찾기(favorite_person) 테이블에서 해당 사용자의 데이터 삭제
+    await connection.query(`DELETE FROM favorite_person WHERE user_id = ?`, [
+      userId,
+    ]);
+
+    // 9. 마지막으로 사용자(user) 테이블에서 사용자 삭제
     const [result] = await connection.query("DELETE FROM user WHERE id = ?", [
       userId,
     ]);
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       throw new NotFoundError("사용자를 찾을 수 없습니다.");
     }
 
+    await connection.commit();
     return true;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
   } finally {
     connection.release();
   }
 };
+
+// 카테고리를 계층 구조에 따라 정렬하는 헬퍼 함수 (자식부터)
+function sortCategoriesByHierarchy(categories) {
+  const categoryMap = new Map();
+  const roots = [];
+  const result = [];
+
+  // 카테고리 맵 생성
+  categories.forEach((cat) => {
+    categoryMap.set(cat.id, { ...cat, children: [] });
+  });
+
+  // 부모-자식 관계 설정 및 루트 카테고리 찾기
+  categories.forEach((cat) => {
+    if (cat.parent_category_id === null) {
+      roots.push(categoryMap.get(cat.id));
+    } else {
+      const parent = categoryMap.get(cat.parent_category_id);
+      if (parent) {
+        parent.children.push(categoryMap.get(cat.id));
+      }
+    }
+  });
+
+  // DFS로 자식부터 역순으로 수집
+  function collectInReverseOrder(node) {
+    // 먼저 자식들을 처리
+    node.children.forEach((child) => {
+      collectInReverseOrder(child);
+    });
+    // 그 다음 자신을 추가
+    result.push(node);
+  }
+
+  // 모든 루트부터 시작
+  roots.forEach((root) => {
+    collectInReverseOrder(root);
+  });
+
+  return result;
+}
 
 // 비밀번호 확인용 사용자 조회 - deleteUserService에서 필요
 export const findUserWithPasswordById = async (userId) => {
