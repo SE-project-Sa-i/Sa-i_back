@@ -33,7 +33,8 @@ export const findPersonById = async (personId, userId) => {
   try {
     const [personRows] = await pool.query(
       `SELECT p.*, c.title as category_name,
-                CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
+                CASE WHEN f.person_id IS NOT NULL THEN 1 ELSE 0 END as is_favorite,
+                p.created_at
          FROM person p
                 LEFT JOIN category c ON p.category_id = c.id
                 LEFT JOIN favorite_person f ON p.id = f.person_id AND f.user_id = ?

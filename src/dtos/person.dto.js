@@ -19,6 +19,9 @@ export const personDetailResponseDTO = (person) => {
     note: person.note || null,
     isFavorite: person.is_favorite,
     likeability: person.likeability || 0,
+    createdAt: person.created_at
+      ? new Date(person.created_at).toISOString().split("T")[0]
+      : null,
   };
 };
 

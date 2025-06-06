@@ -293,7 +293,15 @@ export const handleGetPersonById = async (req, res) => {
               isFavorite: { 
                 type: "number", 
                 example: 0 
-              }
+              },
+              likeability: {
+                type: "number",
+                example: 5
+              },
+              createdAt: {
+                type: "string",
+                example: "2024-05-05"
+              },
             }
           }
         }
