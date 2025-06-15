@@ -1254,12 +1254,7 @@ export const handleDeleteUser = async (req, res) => {
 
     const userId = req.userId;
 
-    // 회원 탈퇴 요청에 비밀번호 확인이 필요한 경우
-    if (!req.body.password) {
-      throw new MissRequiredFieldError("비밀번호를 입력해주세요.");
-    }
-
-    await deleteUserService(userId, req.body.password);
+    await deleteUserService(userId);
 
     res
       .status(StatusCodes.OK)

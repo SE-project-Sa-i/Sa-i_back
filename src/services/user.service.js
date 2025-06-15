@@ -121,16 +121,9 @@ export const updateUserProfileService = async (userId, updateData) => {
 };
 
 // 회원 탈퇴 서비스
-export const deleteUserService = async (userId, password) => {
+export const deleteUserService = async (userId) => {
   try {
     const user = await findUserWithPasswordById(userId);
-
-    // 비밀번호 확인
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedError("비밀번호가 일치하지 않습니다.");
-    }
 
     // 회원 탈퇴
     await deleteUser(userId);
